@@ -10,6 +10,24 @@ import (
 	"fmt"
 )
 
+// DropTable is the resolver for the dropTable field.
+func (r *mutationResolver) DropTable(ctx context.Context) (bool, error) {
+	_, err := r.DB.DropTable(ctx)
+	if err != nil {
+		return false, err
+	}
+	return true, err
+}
+
+// CreateTable is the resolver for the createTable field.
+func (r *mutationResolver) CreateTable(ctx context.Context) (bool, error) {
+	_, err := r.DB.CreateTables(ctx)
+	if err != nil {
+		return false, err
+	}
+	return true, err
+}
+
 // CameraCreate is the resolver for the cameraCreate field.
 func (r *mutationResolver) CameraCreate(ctx context.Context, input model.NewCamera) (*model.Camera, error) {
 	panic(fmt.Errorf("not implemented: CameraCreate - cameraCreate"))

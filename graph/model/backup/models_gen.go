@@ -15,7 +15,7 @@ type Camera struct {
 type Case struct {
 	ID         string    `json:"id" bun:",pk"`
 	CaseDate   time.Time `json:"case_date" bun:",notnull"`
-	CameraID   string    `json:"camera_iD" bun:",notnull"`
+	CameraID   string    `json:"camera_id" bun:",notnull"`
 	Image1Path string    `json:"image1_path" bun:",notnull"`
 	Image2Path *string   `json:"image2_path,omitempty"`
 	Image3Path *string   `json:"image3_path,omitempty"`
@@ -31,7 +31,7 @@ type NewCamera struct {
 
 type NewCase struct {
 	CaseDate   time.Time `json:"case_date"`
-	CameraID   string    `json:"camera_iD"`
+	CameraID   string    `json:"camera_id"`
 	Image1Path string    `json:"image1_path"`
 	Image2Path *string   `json:"image2_path,omitempty"`
 	Image3Path *string   `json:"image3_path,omitempty"`

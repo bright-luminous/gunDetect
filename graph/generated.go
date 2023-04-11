@@ -55,6 +55,8 @@ type ComplexityRoot struct {
 		CaseDelete      func(childComplexity int, input string) int
 		CaseDeleteAll   func(childComplexity int) int
 		CaseUpdate      func(childComplexity int, input model.NewCase) int
+		CreateTable     func(childComplexity int) int
+		DropTable       func(childComplexity int) int
 	}
 
 	Query struct {
@@ -84,6 +86,8 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
+	DropTable(ctx context.Context) (bool, error)
+	CreateTable(ctx context.Context) (bool, error)
 	CameraCreate(ctx context.Context, input model.NewCamera) (*model.Camera, error)
 	CameraUpdate(ctx context.Context, input model.NewCamera) (*model.Camera, error)
 	CameraDelete(ctx context.Context, input string) (*model.Camera, error)
@@ -201,6 +205,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CaseUpdate(childComplexity, args["input"].(model.NewCase)), true
 
+	case "Mutation.createTable":
+		if e.complexity.Mutation.CreateTable == nil {
+			break
+		}
+
+		return e.complexity.Mutation.CreateTable(childComplexity), true
+
+	case "Mutation.dropTable":
+		if e.complexity.Mutation.DropTable == nil {
+			break
+		}
+
+		return e.complexity.Mutation.DropTable(childComplexity), true
+
 	case "Query.cameraByID":
 		if e.complexity.Query.CameraByID == nil {
 			break
@@ -260,7 +278,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Camera.LocationName(childComplexity), true
 
-	case "case.camera_iD":
+	case "case.camera_id":
 		if e.complexity.Case.CameraID == nil {
 			break
 		}
@@ -585,6 +603,94 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Mutation_dropTable(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_dropTable(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DropTable(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_dropTable(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createTable(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createTable(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTable(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createTable(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_cameraCreate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_cameraCreate(ctx, field)
 	if err != nil {
@@ -866,8 +972,8 @@ func (ec *executionContext) fieldContext_Mutation_caseCreate(ctx context.Context
 				return ec.fieldContext_case_id(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
-			case "camera_iD":
-				return ec.fieldContext_case_camera_iD(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
 			case "image1_path":
 				return ec.fieldContext_case_image1_path(ctx, field)
 			case "image2_path":
@@ -941,8 +1047,8 @@ func (ec *executionContext) fieldContext_Mutation_caseUpdate(ctx context.Context
 				return ec.fieldContext_case_id(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
-			case "camera_iD":
-				return ec.fieldContext_case_camera_iD(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
 			case "image1_path":
 				return ec.fieldContext_case_image1_path(ctx, field)
 			case "image2_path":
@@ -1016,8 +1122,8 @@ func (ec *executionContext) fieldContext_Mutation_caseDelete(ctx context.Context
 				return ec.fieldContext_case_id(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
-			case "camera_iD":
-				return ec.fieldContext_case_camera_iD(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
 			case "image1_path":
 				return ec.fieldContext_case_image1_path(ctx, field)
 			case "image2_path":
@@ -1088,8 +1194,8 @@ func (ec *executionContext) fieldContext_Mutation_caseDeleteAll(ctx context.Cont
 				return ec.fieldContext_case_id(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
-			case "camera_iD":
-				return ec.fieldContext_case_camera_iD(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
 			case "image1_path":
 				return ec.fieldContext_case_image1_path(ctx, field)
 			case "image2_path":
@@ -1267,8 +1373,8 @@ func (ec *executionContext) fieldContext_Query_caseByID(ctx context.Context, fie
 				return ec.fieldContext_case_id(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
-			case "camera_iD":
-				return ec.fieldContext_case_camera_iD(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
 			case "image1_path":
 				return ec.fieldContext_case_image1_path(ctx, field)
 			case "image2_path":
@@ -1342,8 +1448,8 @@ func (ec *executionContext) fieldContext_Query_cases(ctx context.Context, field 
 				return ec.fieldContext_case_id(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
-			case "camera_iD":
-				return ec.fieldContext_case_camera_iD(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
 			case "image1_path":
 				return ec.fieldContext_case_image1_path(ctx, field)
 			case "image2_path":
@@ -3481,8 +3587,8 @@ func (ec *executionContext) fieldContext_case_case_date(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _case_camera_iD(ctx context.Context, field graphql.CollectedField, obj *model.Case) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_case_camera_iD(ctx, field)
+func (ec *executionContext) _case_camera_id(ctx context.Context, field graphql.CollectedField, obj *model.Case) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_case_camera_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3512,7 +3618,7 @@ func (ec *executionContext) _case_camera_iD(ctx context.Context, field graphql.C
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_case_camera_iD(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_case_camera_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "case",
 		Field:      field,
@@ -3827,7 +3933,7 @@ func (ec *executionContext) unmarshalInputnewCase(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"case_date", "camera_iD", "image1_path", "image2_path", "image3_path", "image4_path"}
+	fieldsInOrder := [...]string{"case_date", "camera_id", "image1_path", "image2_path", "image3_path", "image4_path"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3842,10 +3948,10 @@ func (ec *executionContext) unmarshalInputnewCase(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
-		case "camera_iD":
+		case "camera_id":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("camera_iD"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("camera_id"))
 			it.CameraID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -3915,6 +4021,24 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "dropTable":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_dropTable(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTable":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createTable(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "cameraCreate":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -4506,9 +4630,9 @@ func (ec *executionContext) _case(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "camera_iD":
+		case "camera_id":
 
-			out.Values[i] = ec._case_camera_iD(ctx, field, obj)
+			out.Values[i] = ec._case_camera_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

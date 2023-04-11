@@ -1,12 +1,13 @@
 package resource
 
 import (
+	model "AI/graph/model"
 	"AI/util"
 	"context"
 	"database/sql"
 	"errors"
 
-	"graph/model/model"
+	_ "github.com/lib/pq"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -38,8 +39,7 @@ func NewDBOperator(inDSN string) (*SQLop, error) {
 	err = db.Ping()
 	checkErr(err)
 	return &SQLop{
-		cusModel: new(model.Customer),
-		db:       bunDB,
+		db: bunDB,
 	}, err
 }
 
@@ -47,7 +47,7 @@ func NewDBOperator(inDSN string) (*SQLop, error) {
 func (op *SQLop) DropTable(ctx context.Context) (bool, error) {
 	//ticket service
 	_, err := op.db.NewDropTable().
-		Model((*model.TicketService)(nil)).
+		Model((*model.Case)(nil)).
 		IfExists().
 		Exec(ctx)
 	if checkErr(err) {
@@ -55,7 +55,7 @@ func (op *SQLop) DropTable(ctx context.Context) (bool, error) {
 	}
 	//active ticket
 	_, err = op.db.NewDropTable().
-		Model((*model.ActiveTicket)(nil)).
+		Model((*model.Camera)(nil)).
 		IfExists().
 		Exec(ctx)
 	if util.CheckErr(err) {
@@ -67,15 +67,15 @@ func (op *SQLop) DropTable(ctx context.Context) (bool, error) {
 func (op *SQLop) CreateTables(ctx context.Context) (bool, error) {
 	// customer
 	_, err := op.db.NewCreateTable().
-		Model((*model.Customer)(nil)).
+		Model((*model.Camera)(nil)).
 		Exec(ctx)
 	if checkErr(err) {
 		return false, err
 	}
 	//car
 	_, err = op.db.NewCreateTable().
-		Model((*model.Car)(nil)).
-		ForeignKey(`("owner_id") REFERENCES "customers" ("id") ON DELETE CASCADE`).
+		Model((*model.Case)(nil)).
+		ForeignKey(`("camera_id") REFERENCES "cameras" ("id") ON DELETE CASCADE`).
 		Exec(ctx)
 	if checkErr(err) {
 		return false, err

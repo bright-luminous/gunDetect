@@ -22,7 +22,7 @@ type camera {
 type case {
   id: ID!
   case_date: Time!
-  camera_iD: ID!
+  camera_id: ID!
   image1_path: String!
   image2_path: String
   image3_path: String
@@ -39,7 +39,7 @@ input newCamera {
 
 input newCase {
   case_date: Time!
-  camera_iD: ID!
+  camera_id: ID!
   image1_path: String!
   image2_path: String
   image3_path: String
@@ -56,6 +56,9 @@ type Query {
 
 
 type Mutation {
+  dropTable: Boolean!
+  createTable: Boolean!
+  
   cameraCreate(input: newCamera!): camera!
   cameraUpdate(input: newCamera!): camera!
   cameraDelete(input: ID!): camera!
