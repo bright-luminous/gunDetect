@@ -1,0 +1,68 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+# spottedPlace = {
+#   spottedId: string,
+#   datetime: string,
+#   images: [],
+#   status: boolean,
+#   location: string,
+#   locationName: string,
+#   camName: string
+# }
+scalar Time
+
+type camera {
+  id: ID!
+  locationName: String!
+  location: String!
+}
+
+type case {
+  id: ID!
+  case_date: Time!
+  camera_iD: ID!
+  image1_path: String!
+  image2_path: String
+  image3_path: String
+  image4_path: String
+  status: Boolean!
+  respond: Boolean!
+
+}
+
+input newCamera {
+  locationName: String!
+  location: String!
+}
+
+input newCase {
+  case_date: Time!
+  camera_iD: ID!
+  image1_path: String!
+  image2_path: String
+  image3_path: String
+  image4_path: String
+}
+
+type Query {
+  cameraByID(input: ID!): camera!
+  cameras: [camera!]!
+
+  caseByID(input: ID!): case!
+  cases: [case!]!
+}
+
+
+type Mutation {
+  cameraCreate(input: newCamera!): camera!
+  cameraUpdate(input: newCamera!): camera!
+  cameraDelete(input: ID!): camera!
+  cameraDeleteAll: [camera!]
+
+  caseCreate(input: newCase!): case!
+  caseUpdate(input: newCase!): case!
+  caseDelete(input: ID!): case!
+  caseDeleteAll: [case!]
+}
