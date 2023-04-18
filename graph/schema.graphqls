@@ -37,6 +37,12 @@ input newCamera {
   location: String!
 }
 
+input cameraUpdate{
+  id: ID!
+  locationName: String!
+  location: String!
+}
+
 input newCase {
   case_date: Time!
   camera_id: ID!
@@ -60,12 +66,12 @@ type Mutation {
   createTable: Boolean!
   
   cameraCreate(input: newCamera!): camera!
-  cameraUpdate(input: newCamera!): camera!
+  cameraUpdate(input: camera!): camera!
   cameraDelete(input: ID!): camera!
   cameraDeleteAll: [camera!]
 
   caseCreate(input: newCase!): case!
-  caseUpdate(input: newCase!): case!
+  caseUpdate(input: case!): case!
   caseDelete(input: ID!): case!
   caseDeleteAll: [case!]
 }
