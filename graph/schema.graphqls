@@ -52,6 +52,18 @@ input newCase {
   image4_path: String
 }
 
+input caseUpdate{
+  id: ID!
+  case_date: Time!
+  camera_id: ID!
+  image1_path: String!
+  image2_path: String
+  image3_path: String
+  image4_path: String
+  status: Boolean!
+  respond: Boolean!
+}
+
 type Query {
   cameraByID(input: ID!): camera!
   cameras: [camera!]!
@@ -66,12 +78,12 @@ type Mutation {
   createTable: Boolean!
   
   cameraCreate(input: newCamera!): camera!
-  cameraUpdate(input: camera!): camera!
+  cameraUpdate(input: cameraUpdate!): camera!
   cameraDelete(input: ID!): camera!
   cameraDeleteAll: [camera!]
 
   caseCreate(input: newCase!): case!
-  caseUpdate(input: case!): case!
+  caseUpdate(input: caseUpdate!): case!
   caseDelete(input: ID!): case!
   caseDeleteAll: [case!]
 }

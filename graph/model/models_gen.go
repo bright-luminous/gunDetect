@@ -7,9 +7,9 @@ import (
 )
 
 type Camera struct {
-	ID           string `json:"id" bun:",pk"`
-	LocationName string `json:"locationName" bun:",notnull"`
-	Location     string `json:"location" bun:",notnull"`
+	ID           string `json:"id"`
+	LocationName string `json:"locationName"`
+	Location     string `json:"location"`
 }
 
 type CameraUpdate struct {
@@ -19,10 +19,10 @@ type CameraUpdate struct {
 }
 
 type Case struct {
-	ID         string    `json:"id" bun:",pk"`
-	CaseDate   time.Time `json:"case_date" bun:",notnull"`
-	CameraID   string    `json:"camera_id" bun:",notnull"`
-	Image1Path string    `json:"image1_path" bun:",notnull"`
+	ID         string    `json:"id"`
+	CaseDate   time.Time `json:"case_date"`
+	CameraID   string    `json:"camera_id"`
+	Image1Path string    `json:"image1_path"`
 	Image2Path *string   `json:"image2_path,omitempty"`
 	Image3Path *string   `json:"image3_path,omitempty"`
 	Image4Path *string   `json:"image4_path,omitempty"`

@@ -1,13 +1,16 @@
 package resource
 
 import (
+	"AI/graph/model"
 	"context"
 
 	"github.com/uptrace/bun"
 )
 
 type SQLop struct {
-	db *bun.DB
+	db          *bun.DB
+	cameraModel *model.Camera
+	caseModel   *model.Case
 }
 
 type DatabaseOp interface {
