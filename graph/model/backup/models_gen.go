@@ -7,19 +7,23 @@ import (
 )
 
 type Camera struct {
-	ID           string `json:"id" bun:",pk"`
-	LocationName string `json:"locationName" bun:",notnull"`
-	Location     string `json:"location" bun:",notnull"`
+	CameraID     string  `json:"id" bun:",pk"`
+	LocationName string  `json:"locationName" bun:",notnull"`
+	Location     string  `json:"location" bun:",notnull"`
+	Latitude     float64 `json:"latitude" bun:",notnull"`
+	Longitude    float64 `json:"longitude" bun:",notnull"`
 }
 
 type CameraUpdate struct {
-	ID           string `json:"id"`
-	LocationName string `json:"locationName"`
-	Location     string `json:"location"`
+	ID           string  `json:"id"`
+	LocationName string  `json:"locationName"`
+	Location     string  `json:"location"`
+	Latitude     float64 `json:"latitude"`
+	Longitude    float64 `json:"longitude"`
 }
 
 type Case struct {
-	ID         string    `json:"id" bun:",pk"`
+	CaseID     string    `json:"id" bun:",pk"`
 	CaseDate   time.Time `json:"case_date" bun:",notnull"`
 	CameraID   string    `json:"camera_id" bun:",notnull"`
 	Image1Path string    `json:"image1_path" bun:",notnull"`
@@ -42,9 +46,27 @@ type CaseUpdate struct {
 	Respond    bool      `json:"respond"`
 }
 
+type FrontEndCase struct {
+	CaseID       string    `json:"id" bun:",pk"`
+	LocationName string    `json:"locationName" bun:",notnull"`
+	Location     string    `json:"location" bun:",notnull"`
+	Latitude     float64   `json:"latitude" bun:",notnull"`
+	Longitude    float64   `json:"longitude" bun:",notnull"`
+	CaseDate     time.Time `json:"case_date" bun:",notnull"`
+	CameraID     string    `json:"camera_id" bun:",notnull"`
+	Image1Path   string    `json:"image1_path" bun:",notnull"`
+	Image2Path   *string   `json:"image2_path,omitempty"`
+	Image3Path   *string   `json:"image3_path,omitempty"`
+	Image4Path   *string   `json:"image4_path,omitempty"`
+	Status       bool      `json:"status"`
+	Respond      bool      `json:"respond"`
+}
+
 type NewCamera struct {
-	LocationName string `json:"locationName"`
-	Location     string `json:"location"`
+	LocationName string  `json:"locationName"`
+	Location     string  `json:"location"`
+	Latitude     float64 `json:"latitude"`
+	Longitude    float64 `json:"longitude"`
 }
 
 type NewCase struct {

@@ -11,7 +11,7 @@ import (
 func (op *SQLop) CameraCreate(ctx context.Context, cameraInput *model.NewCamera) (*model.Camera, error) {
 	newID := uuid.New().String()
 	caseToBeAdd := model.Camera{
-		ID:           newID,
+		CameraID:     newID,
 		LocationName: cameraInput.LocationName,
 		Location:     cameraInput.Location,
 	}
@@ -48,7 +48,7 @@ func (op *SQLop) CameraDelete(ctx context.Context, ID string) (*model.Camera, er
 func (op *SQLop) CameraDeleteAll(ctx context.Context) ([]*model.Camera, error) {
 	carArr, err := op.Cameras(ctx)
 	for _, v := range carArr {
-		_, err = op.CameraDelete(ctx, v.ID)
+		_, err = op.CameraDelete(ctx, v.CameraID)
 	}
 	return carArr, err
 }

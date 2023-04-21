@@ -60,28 +60,47 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		CameraByID func(childComplexity int, input string) int
-		Cameras    func(childComplexity int) int
-		CaseByID   func(childComplexity int, input string) int
-		Cases      func(childComplexity int) int
+		CameraByID     func(childComplexity int, input string) int
+		Cameras        func(childComplexity int) int
+		CaseByID       func(childComplexity int, input string) int
+		CaseByResponse func(childComplexity int, input *bool) int
+		Cases          func(childComplexity int) int
 	}
 
 	Camera struct {
-		ID           func(childComplexity int) int
+		CameraID     func(childComplexity int) int
+		Latitude     func(childComplexity int) int
 		Location     func(childComplexity int) int
 		LocationName func(childComplexity int) int
+		Longitude    func(childComplexity int) int
 	}
 
 	Case struct {
 		CameraID   func(childComplexity int) int
 		CaseDate   func(childComplexity int) int
-		ID         func(childComplexity int) int
+		CaseID     func(childComplexity int) int
 		Image1Path func(childComplexity int) int
 		Image2Path func(childComplexity int) int
 		Image3Path func(childComplexity int) int
 		Image4Path func(childComplexity int) int
 		Respond    func(childComplexity int) int
 		Status     func(childComplexity int) int
+	}
+
+	FrontEndCase struct {
+		CameraID     func(childComplexity int) int
+		CaseDate     func(childComplexity int) int
+		CaseID       func(childComplexity int) int
+		Image1Path   func(childComplexity int) int
+		Image2Path   func(childComplexity int) int
+		Image3Path   func(childComplexity int) int
+		Image4Path   func(childComplexity int) int
+		Latitude     func(childComplexity int) int
+		Location     func(childComplexity int) int
+		LocationName func(childComplexity int) int
+		Longitude    func(childComplexity int) int
+		Respond      func(childComplexity int) int
+		Status       func(childComplexity int) int
 	}
 }
 
@@ -102,6 +121,7 @@ type QueryResolver interface {
 	Cameras(ctx context.Context) ([]*model.Camera, error)
 	CaseByID(ctx context.Context, input string) (*model.Case, error)
 	Cases(ctx context.Context) ([]*model.Case, error)
+	CaseByResponse(ctx context.Context, input *bool) ([]*model.FrontEndCase, error)
 }
 
 type executableSchema struct {
@@ -250,6 +270,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CaseByID(childComplexity, args["input"].(string)), true
 
+	case "Query.CaseByResponse":
+		if e.complexity.Query.CaseByResponse == nil {
+			break
+		}
+
+		args, err := ec.field_Query_CaseByResponse_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CaseByResponse(childComplexity, args["input"].(*bool)), true
+
 	case "Query.cases":
 		if e.complexity.Query.Cases == nil {
 			break
@@ -257,12 +289,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Cases(childComplexity), true
 
-	case "camera.id":
-		if e.complexity.Camera.ID == nil {
+	case "camera.cameraID":
+		if e.complexity.Camera.CameraID == nil {
 			break
 		}
 
-		return e.complexity.Camera.ID(childComplexity), true
+		return e.complexity.Camera.CameraID(childComplexity), true
+
+	case "camera.latitude":
+		if e.complexity.Camera.Latitude == nil {
+			break
+		}
+
+		return e.complexity.Camera.Latitude(childComplexity), true
 
 	case "camera.location":
 		if e.complexity.Camera.Location == nil {
@@ -278,6 +317,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Camera.LocationName(childComplexity), true
 
+	case "camera.longitude":
+		if e.complexity.Camera.Longitude == nil {
+			break
+		}
+
+		return e.complexity.Camera.Longitude(childComplexity), true
+
 	case "case.camera_id":
 		if e.complexity.Case.CameraID == nil {
 			break
@@ -292,12 +338,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Case.CaseDate(childComplexity), true
 
-	case "case.id":
-		if e.complexity.Case.ID == nil {
+	case "case.caseID":
+		if e.complexity.Case.CaseID == nil {
 			break
 		}
 
-		return e.complexity.Case.ID(childComplexity), true
+		return e.complexity.Case.CaseID(childComplexity), true
 
 	case "case.image1_path":
 		if e.complexity.Case.Image1Path == nil {
@@ -340,6 +386,97 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Case.Status(childComplexity), true
+
+	case "frontEndCase.camera_id":
+		if e.complexity.FrontEndCase.CameraID == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.CameraID(childComplexity), true
+
+	case "frontEndCase.case_date":
+		if e.complexity.FrontEndCase.CaseDate == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.CaseDate(childComplexity), true
+
+	case "frontEndCase.caseID":
+		if e.complexity.FrontEndCase.CaseID == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.CaseID(childComplexity), true
+
+	case "frontEndCase.image1_path":
+		if e.complexity.FrontEndCase.Image1Path == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Image1Path(childComplexity), true
+
+	case "frontEndCase.image2_path":
+		if e.complexity.FrontEndCase.Image2Path == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Image2Path(childComplexity), true
+
+	case "frontEndCase.image3_path":
+		if e.complexity.FrontEndCase.Image3Path == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Image3Path(childComplexity), true
+
+	case "frontEndCase.image4_path":
+		if e.complexity.FrontEndCase.Image4Path == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Image4Path(childComplexity), true
+
+	case "frontEndCase.latitude":
+		if e.complexity.FrontEndCase.Latitude == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Latitude(childComplexity), true
+
+	case "frontEndCase.location":
+		if e.complexity.FrontEndCase.Location == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Location(childComplexity), true
+
+	case "frontEndCase.locationName":
+		if e.complexity.FrontEndCase.LocationName == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.LocationName(childComplexity), true
+
+	case "frontEndCase.longitude":
+		if e.complexity.FrontEndCase.Longitude == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Longitude(childComplexity), true
+
+	case "frontEndCase.respond":
+		if e.complexity.FrontEndCase.Respond == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Respond(childComplexity), true
+
+	case "frontEndCase.status":
+		if e.complexity.FrontEndCase.Status == nil {
+			break
+		}
+
+		return e.complexity.FrontEndCase.Status(childComplexity), true
 
 	}
 	return 0, false
@@ -514,6 +651,21 @@ func (ec *executionContext) field_Mutation_caseUpdate_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNcaseUpdate2AIᚋgraphᚋmodelᚐCaseUpdate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_CaseByResponse_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *bool
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -732,12 +884,16 @@ func (ec *executionContext) fieldContext_Mutation_cameraCreate(ctx context.Conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_camera_id(ctx, field)
+			case "cameraID":
+				return ec.fieldContext_camera_cameraID(ctx, field)
 			case "locationName":
 				return ec.fieldContext_camera_locationName(ctx, field)
 			case "location":
 				return ec.fieldContext_camera_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_camera_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_camera_longitude(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type camera", field.Name)
 		},
@@ -795,12 +951,16 @@ func (ec *executionContext) fieldContext_Mutation_cameraUpdate(ctx context.Conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_camera_id(ctx, field)
+			case "cameraID":
+				return ec.fieldContext_camera_cameraID(ctx, field)
 			case "locationName":
 				return ec.fieldContext_camera_locationName(ctx, field)
 			case "location":
 				return ec.fieldContext_camera_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_camera_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_camera_longitude(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type camera", field.Name)
 		},
@@ -858,12 +1018,16 @@ func (ec *executionContext) fieldContext_Mutation_cameraDelete(ctx context.Conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_camera_id(ctx, field)
+			case "cameraID":
+				return ec.fieldContext_camera_cameraID(ctx, field)
 			case "locationName":
 				return ec.fieldContext_camera_locationName(ctx, field)
 			case "location":
 				return ec.fieldContext_camera_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_camera_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_camera_longitude(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type camera", field.Name)
 		},
@@ -918,12 +1082,16 @@ func (ec *executionContext) fieldContext_Mutation_cameraDeleteAll(ctx context.Co
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_camera_id(ctx, field)
+			case "cameraID":
+				return ec.fieldContext_camera_cameraID(ctx, field)
 			case "locationName":
 				return ec.fieldContext_camera_locationName(ctx, field)
 			case "location":
 				return ec.fieldContext_camera_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_camera_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_camera_longitude(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type camera", field.Name)
 		},
@@ -970,8 +1138,8 @@ func (ec *executionContext) fieldContext_Mutation_caseCreate(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_case_id(ctx, field)
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
 			case "camera_id":
@@ -1045,8 +1213,8 @@ func (ec *executionContext) fieldContext_Mutation_caseUpdate(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_case_id(ctx, field)
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
 			case "camera_id":
@@ -1120,8 +1288,8 @@ func (ec *executionContext) fieldContext_Mutation_caseDelete(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_case_id(ctx, field)
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
 			case "camera_id":
@@ -1192,8 +1360,8 @@ func (ec *executionContext) fieldContext_Mutation_caseDeleteAll(ctx context.Cont
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_case_id(ctx, field)
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
 			case "camera_id":
@@ -1256,12 +1424,16 @@ func (ec *executionContext) fieldContext_Query_cameraByID(ctx context.Context, f
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_camera_id(ctx, field)
+			case "cameraID":
+				return ec.fieldContext_camera_cameraID(ctx, field)
 			case "locationName":
 				return ec.fieldContext_camera_locationName(ctx, field)
 			case "location":
 				return ec.fieldContext_camera_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_camera_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_camera_longitude(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type camera", field.Name)
 		},
@@ -1319,12 +1491,16 @@ func (ec *executionContext) fieldContext_Query_cameras(ctx context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_camera_id(ctx, field)
+			case "cameraID":
+				return ec.fieldContext_camera_cameraID(ctx, field)
 			case "locationName":
 				return ec.fieldContext_camera_locationName(ctx, field)
 			case "location":
 				return ec.fieldContext_camera_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_camera_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_camera_longitude(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type camera", field.Name)
 		},
@@ -1371,8 +1547,8 @@ func (ec *executionContext) fieldContext_Query_caseByID(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_case_id(ctx, field)
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
 			case "camera_id":
@@ -1446,8 +1622,8 @@ func (ec *executionContext) fieldContext_Query_cases(ctx context.Context, field 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_case_id(ctx, field)
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
 			case "case_date":
 				return ec.fieldContext_case_case_date(ctx, field)
 			case "camera_id":
@@ -1467,6 +1643,89 @@ func (ec *executionContext) fieldContext_Query_cases(ctx context.Context, field 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type case", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_CaseByResponse(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_CaseByResponse(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CaseByResponse(rctx, fc.Args["input"].(*bool))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.FrontEndCase)
+	fc.Result = res
+	return ec.marshalNfrontEndCase2ᚕᚖAIᚋgraphᚋmodelᚐFrontEndCaseᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_CaseByResponse(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "caseID":
+				return ec.fieldContext_frontEndCase_caseID(ctx, field)
+			case "locationName":
+				return ec.fieldContext_frontEndCase_locationName(ctx, field)
+			case "location":
+				return ec.fieldContext_frontEndCase_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_frontEndCase_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_frontEndCase_longitude(ctx, field)
+			case "case_date":
+				return ec.fieldContext_frontEndCase_case_date(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_frontEndCase_camera_id(ctx, field)
+			case "image1_path":
+				return ec.fieldContext_frontEndCase_image1_path(ctx, field)
+			case "image2_path":
+				return ec.fieldContext_frontEndCase_image2_path(ctx, field)
+			case "image3_path":
+				return ec.fieldContext_frontEndCase_image3_path(ctx, field)
+			case "image4_path":
+				return ec.fieldContext_frontEndCase_image4_path(ctx, field)
+			case "status":
+				return ec.fieldContext_frontEndCase_status(ctx, field)
+			case "respond":
+				return ec.fieldContext_frontEndCase_respond(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type frontEndCase", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_CaseByResponse_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -3369,8 +3628,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _camera_id(ctx context.Context, field graphql.CollectedField, obj *model.Camera) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_camera_id(ctx, field)
+func (ec *executionContext) _camera_cameraID(ctx context.Context, field graphql.CollectedField, obj *model.Camera) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_camera_cameraID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3383,7 +3642,7 @@ func (ec *executionContext) _camera_id(ctx context.Context, field graphql.Collec
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.CameraID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3400,7 +3659,7 @@ func (ec *executionContext) _camera_id(ctx context.Context, field graphql.Collec
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_camera_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_camera_cameraID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "camera",
 		Field:      field,
@@ -3501,8 +3760,8 @@ func (ec *executionContext) fieldContext_camera_location(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _case_id(ctx context.Context, field graphql.CollectedField, obj *model.Case) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_case_id(ctx, field)
+func (ec *executionContext) _camera_latitude(ctx context.Context, field graphql.CollectedField, obj *model.Camera) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_camera_latitude(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3515,7 +3774,95 @@ func (ec *executionContext) _case_id(ctx context.Context, field graphql.Collecte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.Latitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_camera_latitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "camera",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _camera_longitude(ctx context.Context, field graphql.CollectedField, obj *model.Camera) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_camera_longitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Longitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_camera_longitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "camera",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _case_caseID(ctx context.Context, field graphql.CollectedField, obj *model.Case) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_case_caseID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CaseID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3532,7 +3879,7 @@ func (ec *executionContext) _case_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_case_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_case_caseID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "case",
 		Field:      field,
@@ -3888,6 +4235,569 @@ func (ec *executionContext) fieldContext_case_respond(ctx context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _frontEndCase_caseID(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_caseID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CaseID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_caseID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_locationName(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_locationName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LocationName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_locationName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_location(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_location(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_location(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_latitude(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_latitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Latitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_latitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_longitude(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_longitude(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Longitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_longitude(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_case_date(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_case_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CaseDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_case_date(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_camera_id(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_camera_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CameraID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_camera_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_image1_path(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_image1_path(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image1Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_image1_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_image2_path(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_image2_path(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image2Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_image2_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_image3_path(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_image3_path(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image3Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_image3_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_image4_path(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_image4_path(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image4Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_image4_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_status(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _frontEndCase_respond(ctx context.Context, field graphql.CollectedField, obj *model.FrontEndCase) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_frontEndCase_respond(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Respond, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_frontEndCase_respond(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "frontEndCase",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -3899,7 +4809,7 @@ func (ec *executionContext) unmarshalInputcameraUpdate(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "locationName", "location"}
+	fieldsInOrder := [...]string{"id", "locationName", "location", "latitude", "longitude"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3927,6 +4837,22 @@ func (ec *executionContext) unmarshalInputcameraUpdate(ctx context.Context, obj 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
 			it.Location, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "latitude":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
+			it.Latitude, err = ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "longitude":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
+			it.Longitude, err = ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4035,7 +4961,7 @@ func (ec *executionContext) unmarshalInputnewCamera(ctx context.Context, obj int
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"locationName", "location"}
+	fieldsInOrder := [...]string{"locationName", "location", "latitude", "longitude"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4055,6 +4981,22 @@ func (ec *executionContext) unmarshalInputnewCamera(ctx context.Context, obj int
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
 			it.Location, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "latitude":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
+			it.Latitude, err = ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "longitude":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
+			it.Longitude, err = ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4352,6 +5294,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_cases(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "CaseByResponse":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_CaseByResponse(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -4712,9 +5677,9 @@ func (ec *executionContext) _camera(ctx context.Context, sel ast.SelectionSet, o
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("camera")
-		case "id":
+		case "cameraID":
 
-			out.Values[i] = ec._camera_id(ctx, field, obj)
+			out.Values[i] = ec._camera_cameraID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -4729,6 +5694,20 @@ func (ec *executionContext) _camera(ctx context.Context, sel ast.SelectionSet, o
 		case "location":
 
 			out.Values[i] = ec._camera_location(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "latitude":
+
+			out.Values[i] = ec._camera_latitude(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "longitude":
+
+			out.Values[i] = ec._camera_longitude(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -4754,9 +5733,9 @@ func (ec *executionContext) _case(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("case")
-		case "id":
+		case "caseID":
 
-			out.Values[i] = ec._case_id(ctx, field, obj)
+			out.Values[i] = ec._case_caseID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -4819,6 +5798,109 @@ func (ec *executionContext) _case(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var frontEndCaseImplementors = []string{"frontEndCase"}
+
+func (ec *executionContext) _frontEndCase(ctx context.Context, sel ast.SelectionSet, obj *model.FrontEndCase) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, frontEndCaseImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("frontEndCase")
+		case "caseID":
+
+			out.Values[i] = ec._frontEndCase_caseID(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "locationName":
+
+			out.Values[i] = ec._frontEndCase_locationName(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "location":
+
+			out.Values[i] = ec._frontEndCase_location(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "latitude":
+
+			out.Values[i] = ec._frontEndCase_latitude(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "longitude":
+
+			out.Values[i] = ec._frontEndCase_longitude(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "case_date":
+
+			out.Values[i] = ec._frontEndCase_case_date(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "camera_id":
+
+			out.Values[i] = ec._frontEndCase_camera_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "image1_path":
+
+			out.Values[i] = ec._frontEndCase_image1_path(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "image2_path":
+
+			out.Values[i] = ec._frontEndCase_image2_path(ctx, field, obj)
+
+		case "image3_path":
+
+			out.Values[i] = ec._frontEndCase_image3_path(ctx, field, obj)
+
+		case "image4_path":
+
+			out.Values[i] = ec._frontEndCase_image4_path(ctx, field, obj)
+
+		case "status":
+
+			out.Values[i] = ec._frontEndCase_status(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "respond":
+
+			out.Values[i] = ec._frontEndCase_respond(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -4836,6 +5918,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	res := graphql.MarshalFloatContext(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return graphql.WrapContextMarshaler(ctx, res)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
@@ -5260,6 +6357,60 @@ func (ec *executionContext) marshalNcase2ᚖAIᚋgraphᚋmodelᚐCase(ctx contex
 func (ec *executionContext) unmarshalNcaseUpdate2AIᚋgraphᚋmodelᚐCaseUpdate(ctx context.Context, v interface{}) (model.CaseUpdate, error) {
 	res, err := ec.unmarshalInputcaseUpdate(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNfrontEndCase2ᚕᚖAIᚋgraphᚋmodelᚐFrontEndCaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.FrontEndCase) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNfrontEndCase2ᚖAIᚋgraphᚋmodelᚐFrontEndCase(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNfrontEndCase2ᚖAIᚋgraphᚋmodelᚐFrontEndCase(ctx context.Context, sel ast.SelectionSet, v *model.FrontEndCase) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._frontEndCase(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNnewCamera2AIᚋgraphᚋmodelᚐNewCamera(ctx context.Context, v interface{}) (model.NewCamera, error) {

@@ -14,13 +14,15 @@
 scalar Time
 
 type camera {
-  id: ID!
+  cameraID: ID!
   locationName: String!
   location: String!
+  latitude: Float!
+  longitude: Float!
 }
 
 type case {
-  id: ID!
+  caseID: ID!
   case_date: Time!
   camera_id: ID!
   image1_path: String!
@@ -32,15 +34,35 @@ type case {
 
 }
 
+type frontEndCase {
+  caseID: ID!
+  locationName: String!
+  location: String!
+  latitude: Float!
+  longitude: Float!
+  case_date: Time!
+  camera_id: ID!
+  image1_path: String!
+  image2_path: String
+  image3_path: String
+  image4_path: String
+  status: Boolean!
+  respond: Boolean!
+}
+
 input newCamera {
   locationName: String!
   location: String!
+  latitude: Float!
+  longitude: Float!
 }
 
 input cameraUpdate{
   id: ID!
   locationName: String!
   location: String!
+  latitude: Float!
+  longitude: Float!
 }
 
 input newCase {
@@ -70,6 +92,7 @@ type Query {
 
   caseByID(input: ID!): case!
   cases: [case!]!
+  CaseByResponse(input: Boolean): [frontEndCase!]!
 }
 
 

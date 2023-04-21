@@ -7,7 +7,6 @@ package graph
 import (
 	"AI/graph/model"
 	"context"
-	"fmt"
 )
 
 // DropTable is the resolver for the dropTable field.
@@ -30,62 +29,119 @@ func (r *mutationResolver) CreateTable(ctx context.Context) (bool, error) {
 
 // CameraCreate is the resolver for the cameraCreate field.
 func (r *mutationResolver) CameraCreate(ctx context.Context, input model.NewCamera) (*model.Camera, error) {
-	panic(fmt.Errorf("not implemented: CameraCreate - cameraCreate"))
+	returnCamera, err := r.DB.CameraCreate(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCamera, err
 }
 
 // CameraUpdate is the resolver for the cameraUpdate field.
 func (r *mutationResolver) CameraUpdate(ctx context.Context, input model.CameraUpdate) (*model.Camera, error) {
-	panic(fmt.Errorf("not implemented: CameraUpdate - cameraUpdate"))
+	returnCamera, err := r.DB.CameraUpdate(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCamera, err
 }
 
 // CameraDelete is the resolver for the cameraDelete field.
 func (r *mutationResolver) CameraDelete(ctx context.Context, input string) (*model.Camera, error) {
-	panic(fmt.Errorf("not implemented: CameraDelete - cameraDelete"))
+	returnCamera, err := r.DB.CameraDelete(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCamera, err
 }
 
 // CameraDeleteAll is the resolver for the cameraDeleteAll field.
 func (r *mutationResolver) CameraDeleteAll(ctx context.Context) ([]*model.Camera, error) {
-	panic(fmt.Errorf("not implemented: CameraDeleteAll - cameraDeleteAll"))
+	returnCameras, err := r.DB.CameraDeleteAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return returnCameras, err
 }
 
 // CaseCreate is the resolver for the caseCreate field.
 func (r *mutationResolver) CaseCreate(ctx context.Context, input model.NewCase) (*model.Case, error) {
-	panic(fmt.Errorf("not implemented: CaseCreate - caseCreate"))
+	returnCase, err := r.DB.CaseCreate(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // CaseUpdate is the resolver for the caseUpdate field.
 func (r *mutationResolver) CaseUpdate(ctx context.Context, input model.CaseUpdate) (*model.Case, error) {
-	panic(fmt.Errorf("not implemented: CaseUpdate - caseUpdate"))
+	returnCase, err := r.DB.CaseUpdate(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // CaseDelete is the resolver for the caseDelete field.
 func (r *mutationResolver) CaseDelete(ctx context.Context, input string) (*model.Case, error) {
-	panic(fmt.Errorf("not implemented: CaseDelete - caseDelete"))
+	returnCase, err := r.DB.CaseDelete(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // CaseDeleteAll is the resolver for the caseDeleteAll field.
 func (r *mutationResolver) CaseDeleteAll(ctx context.Context) ([]*model.Case, error) {
-	panic(fmt.Errorf("not implemented: CaseDeleteAll - caseDeleteAll"))
+	returnCase, err := r.DB.CaseDeleteAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // CameraByID is the resolver for the cameraByID field.
 func (r *queryResolver) CameraByID(ctx context.Context, input string) (*model.Camera, error) {
-	panic(fmt.Errorf("not implemented: CameraByID - cameraByID"))
+	returnCase, err := r.DB.CameraFindByID(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // Cameras is the resolver for the cameras field.
 func (r *queryResolver) Cameras(ctx context.Context) ([]*model.Camera, error) {
-	panic(fmt.Errorf("not implemented: Cameras - cameras"))
+	returnCase, err := r.DB.Cameras(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // CaseByID is the resolver for the caseByID field.
 func (r *queryResolver) CaseByID(ctx context.Context, input string) (*model.Case, error) {
-	panic(fmt.Errorf("not implemented: CaseByID - caseByID"))
+	returnCase, err := r.DB.CaseFindByID(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // Cases is the resolver for the cases field.
 func (r *queryResolver) Cases(ctx context.Context) ([]*model.Case, error) {
-	panic(fmt.Errorf("not implemented: Cases - cases"))
+	returnCase, err := r.DB.Cases(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
+}
+
+// CaseByResponse is the resolver for the CaseByResponse field.
+func (r *queryResolver) CaseByResponse(ctx context.Context, input *bool) ([]*model.FrontEndCase, error) {
+	returnCase, err := r.DB.CaseByResponse(ctx, *input)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
 }
 
 // Mutation returns MutationResolver implementation.

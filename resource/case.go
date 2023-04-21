@@ -11,7 +11,7 @@ import (
 func (op *SQLop) CaseCreate(ctx context.Context, caseInput *model.NewCase) (*model.Case, error) {
 	newID := uuid.New().String()
 	caseToBeAdd := model.Case{
-		ID:         newID,
+		CaseID:     newID,
 		CaseDate:   caseInput.CaseDate,
 		CameraID:   caseInput.CameraID,
 		Image1Path: caseInput.Image1Path,
@@ -54,7 +54,7 @@ func (op *SQLop) CaseDelete(ctx context.Context, ID string) (*model.Case, error)
 func (op *SQLop) CaseDeleteAll(ctx context.Context) ([]*model.Case, error) {
 	carArr, err := op.Cases(ctx)
 	for _, v := range carArr {
-		_, err = op.CameraDelete(ctx, v.ID)
+		_, err = op.CameraDelete(ctx, v.CaseID)
 	}
 	return carArr, err
 }
@@ -71,6 +71,18 @@ func (op *SQLop) CaseFindByID(ctx context.Context, ID string) (*model.Case, erro
 
 func (op *SQLop) Cases(ctx context.Context) ([]*model.Case, error) {
 	car := new([]*model.Case)
-	err := op.db.NewSelect().Model(op.cameraModel).Scan(ctx, car)
+	err := op.db.NewSelect().Model(op.caseModel).Scan(ctx, car)
 	return *car, err
+}
+
+func (op *SQLop) CaseByResponse(ctx context.Context, TF bool) ([]*model.FrontEndCase, error) {
+	arrModel := new([]*model.FrontEndCase)
+	err := op.db.NewSelect().Table("cases", "cameras").
+		// Where("cases.status = ?", TF).
+		// ExcludeColumn("cameras.id").
+		TableExpr("cases AS cas").
+		Join("JOIN cameras AS cam").
+		JoinOn("cas.camera_id=cam.camera_id").
+		Scan(ctx, arrModel)
+	return *arrModel, err
 }

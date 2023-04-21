@@ -75,7 +75,7 @@ func (op *SQLop) CreateTables(ctx context.Context) (bool, error) {
 	//car
 	_, err = op.db.NewCreateTable().
 		Model((*model.Case)(nil)).
-		ForeignKey(`("camera_id") REFERENCES "cameras" ("id") ON DELETE CASCADE`).
+		ForeignKey(`("camera_id") REFERENCES "cameras" ("camera_id") ON DELETE CASCADE`).
 		Exec(ctx)
 	if checkErr(err) {
 		return false, err
