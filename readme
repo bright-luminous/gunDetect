@@ -1,0 +1,57 @@
+mutation dropTable {
+  dropTable
+}
+
+mutation createTable {
+  createTable
+}
+
+mutation cameraCreate{
+  cameraCreate(input:{
+    locationName: "abc"
+    location: "123"
+    latitude: 10.25
+    longitude: 15.11
+  }) {
+    cameraID
+  }
+}
+
+mutation caseCreate{
+  caseCreate(input:{
+    case_date:"2016-07-20T17:30:15+05:30"
+    camera_id: "ead23283-cabf-44e0-be8e-29ca09ff8665"
+    image1_path: "c/gu/a"
+  }){
+    caseID
+    case_date
+    camera_id
+  }
+}
+
+query caseByRespone{
+  CaseByResponse(input:false)
+  {
+    caseID
+    locationName
+    location
+    latitude
+    longitude
+    case_date
+    camera_id
+    image1_path
+  }
+}
+
+query cases{
+  cases{
+    caseID
+    camera_id
+  }
+}
+  
+query camera{
+  cameras{
+    cameraID
+  }
+}
