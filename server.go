@@ -35,13 +35,15 @@ func main() {
 	var dbname string = viper.GetString("connectionDetail.dbname")
 	var goChiPort string = viper.GetString("connectionDetail.goChiPort")
 
-	r.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET, POST, OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type"},
-		AllowCredentials: true,
-		Debug:            true,
-	}).Handler)
+	// r.Use(cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowedMethods:   []string{"GET, POST, OPTIONS"},
+	// 	AllowedHeaders:   []string{"*"},
+	// 	AllowCredentials: true,
+	// 	Debug:            true,
+	// }).Handler)
+
+	r.Use(cors.New(cors.Options{}).Handler)
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
