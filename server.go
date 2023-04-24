@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	"github.com/spf13/viper"
 )
 
@@ -33,6 +34,14 @@ func main() {
 	var password string = viper.GetString("connectionDetail.password")
 	var dbname string = viper.GetString("connectionDetail.dbname")
 	var goChiPort string = viper.GetString("connectionDetail.goChiPort")
+
+	r.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET, POST, OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",

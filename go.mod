@@ -30,6 +30,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/fatih/color v1.14.1 // indirect
 	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/cors v1.2.1
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
