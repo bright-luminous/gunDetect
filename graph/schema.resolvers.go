@@ -135,9 +135,18 @@ func (r *queryResolver) Cases(ctx context.Context) ([]*model.Case, error) {
 	return returnCase, err
 }
 
-// CaseByResponse is the resolver for the CaseByResponse field.
-func (r *queryResolver) CaseByResponse(ctx context.Context, input *bool) ([]*model.FrontEndCase, error) {
-	returnCase, err := r.DB.CaseByResponse(ctx, *input)
+// CaseByResponseNull is the resolver for the CaseByResponseNull field.
+func (r *queryResolver) CaseByResponseNull(ctx context.Context) ([]*model.FrontEndCase, error) {
+	returnCase, err := r.DB.CaseByResponseNull(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return returnCase, err
+}
+
+// CaseByResponseNotNull is the resolver for the CaseByResponseNotNull field.
+func (r *queryResolver) CaseByResponseNotNull(ctx context.Context) ([]*model.FrontEndCase, error) {
+	returnCase, err := r.DB.CaseByResponseNotNull(ctx)
 	if err != nil {
 		return nil, err
 	}

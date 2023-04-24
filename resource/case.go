@@ -18,8 +18,8 @@ func (op *SQLop) CaseCreate(ctx context.Context, caseInput *model.NewCase) (*mod
 		Image2Path: caseInput.Image2Path,
 		Image3Path: caseInput.Image3Path,
 		Image4Path: caseInput.Image4Path,
-		Status:     true,
-		Respond:    false,
+		Status:     nil,
+		Respond:    nil,
 	}
 	_, err := op.db.NewInsert().Model(&caseToBeAdd).Exec(ctx)
 	return &caseToBeAdd, err
@@ -75,11 +75,21 @@ func (op *SQLop) Cases(ctx context.Context) ([]*model.Case, error) {
 	return *car, err
 }
 
-func (op *SQLop) CaseByResponse(ctx context.Context, TF bool) ([]*model.FrontEndCase, error) {
+func (op *SQLop) CaseByResponseNull(ctx context.Context) ([]*model.FrontEndCase, error) {
 	arrModel := new([]*model.FrontEndCase)
 	err := op.db.NewSelect().Table("cases", "cameras").
-		// Where("cases.status = ?", TF).
-		// ExcludeColumn("cameras.id").
+		Where("cases.respond IS NULL").
+		TableExpr("cases AS cas").
+		Join("JOIN cameras AS cam").
+		JoinOn("cas.camera_id=cam.camera_id").
+		Scan(ctx, arrModel)
+	return *arrModel, err
+}
+
+func (op *SQLop) CaseByResponseNotNull(ctx context.Context) ([]*model.FrontEndCase, error) {
+	arrModel := new([]*model.FrontEndCase)
+	err := op.db.NewSelect().Table("cases", "cameras").
+		Where("cases.respond IS NOT NULL").
 		TableExpr("cases AS cas").
 		Join("JOIN cameras AS cam").
 		JoinOn("cas.camera_id=cam.camera_id").

@@ -32,5 +32,6 @@ type DatabaseOp interface {
 
 	CaseFindByID(ctx context.Context, ID string) (*model.Case, error)
 	Cases(ctx context.Context) ([]*model.Case, error)
-	CaseByResponse(ctx context.Context, TF bool) ([]*model.FrontEndCase, error)
+	CaseByResponseNull(ctx context.Context) ([]*model.FrontEndCase, error)
+	CaseByResponseNotNull(ctx context.Context) ([]*model.FrontEndCase, error)
 }

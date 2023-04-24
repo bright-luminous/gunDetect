@@ -29,8 +29,8 @@ type case {
   image2_path: String
   image3_path: String
   image4_path: String
-  status: Boolean!
-  respond: Boolean!
+  status: Boolean
+  respond: Boolean
 
 }
 
@@ -46,8 +46,8 @@ type frontEndCase {
   image2_path: String
   image3_path: String
   image4_path: String
-  status: Boolean!
-  respond: Boolean!
+  status: Boolean
+  respond: Boolean
 }
 
 input newCamera {
@@ -92,7 +92,8 @@ type Query {
 
   caseByID(input: ID!): case!
   cases: [case!]!
-  CaseByResponse(input: Boolean): [frontEndCase!]!
+  CaseByResponseNull: [frontEndCase!]!
+  CaseByResponseNotNull: [frontEndCase!]!
 }
 
 

@@ -30,8 +30,8 @@ type Case struct {
 	Image2Path *string   `json:"image2_path,omitempty"`
 	Image3Path *string   `json:"image3_path,omitempty"`
 	Image4Path *string   `json:"image4_path,omitempty"`
-	Status     bool      `json:"status"`
-	Respond    bool      `json:"respond"`
+	Status     *bool     `json:"status,omitempty"`
+	Respond    *bool     `json:"respond,omitempty"`
 }
 
 type CaseUpdate struct {
@@ -58,8 +58,8 @@ type FrontEndCase struct {
 	Image2Path   *string   `json:"image2_path,omitempty"`
 	Image3Path   *string   `json:"image3_path,omitempty"`
 	Image4Path   *string   `json:"image4_path,omitempty"`
-	Status       bool      `json:"status"`
-	Respond      bool      `json:"respond"`
+	Status       *bool     `json:"status,omitempty"`
+	Respond      *bool     `json:"respond,omitempty"`
 }
 
 type NewCamera struct {

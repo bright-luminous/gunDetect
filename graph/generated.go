@@ -60,11 +60,12 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		CameraByID     func(childComplexity int, input string) int
-		Cameras        func(childComplexity int) int
-		CaseByID       func(childComplexity int, input string) int
-		CaseByResponse func(childComplexity int, input *bool) int
-		Cases          func(childComplexity int) int
+		CameraByID            func(childComplexity int, input string) int
+		Cameras               func(childComplexity int) int
+		CaseByID              func(childComplexity int, input string) int
+		CaseByResponseNotNull func(childComplexity int) int
+		CaseByResponseNull    func(childComplexity int) int
+		Cases                 func(childComplexity int) int
 	}
 
 	Camera struct {
@@ -121,7 +122,8 @@ type QueryResolver interface {
 	Cameras(ctx context.Context) ([]*model.Camera, error)
 	CaseByID(ctx context.Context, input string) (*model.Case, error)
 	Cases(ctx context.Context) ([]*model.Case, error)
-	CaseByResponse(ctx context.Context, input *bool) ([]*model.FrontEndCase, error)
+	CaseByResponseNull(ctx context.Context) ([]*model.FrontEndCase, error)
+	CaseByResponseNotNull(ctx context.Context) ([]*model.FrontEndCase, error)
 }
 
 type executableSchema struct {
@@ -270,17 +272,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CaseByID(childComplexity, args["input"].(string)), true
 
-	case "Query.CaseByResponse":
-		if e.complexity.Query.CaseByResponse == nil {
+	case "Query.CaseByResponseNotNull":
+		if e.complexity.Query.CaseByResponseNotNull == nil {
 			break
 		}
 
-		args, err := ec.field_Query_CaseByResponse_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
+		return e.complexity.Query.CaseByResponseNotNull(childComplexity), true
+
+	case "Query.CaseByResponseNull":
+		if e.complexity.Query.CaseByResponseNull == nil {
+			break
 		}
 
-		return e.complexity.Query.CaseByResponse(childComplexity, args["input"].(*bool)), true
+		return e.complexity.Query.CaseByResponseNull(childComplexity), true
 
 	case "Query.cases":
 		if e.complexity.Query.Cases == nil {
@@ -651,21 +655,6 @@ func (ec *executionContext) field_Mutation_caseUpdate_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNcaseUpdate2AIᚋgraphᚋmodelᚐCaseUpdate(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_CaseByResponse_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *bool
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1647,8 +1636,8 @@ func (ec *executionContext) fieldContext_Query_cases(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_CaseByResponse(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_CaseByResponse(ctx, field)
+func (ec *executionContext) _Query_CaseByResponseNull(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_CaseByResponseNull(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1661,7 +1650,7 @@ func (ec *executionContext) _Query_CaseByResponse(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CaseByResponse(rctx, fc.Args["input"].(*bool))
+		return ec.resolvers.Query().CaseByResponseNull(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1678,7 +1667,7 @@ func (ec *executionContext) _Query_CaseByResponse(ctx context.Context, field gra
 	return ec.marshalNfrontEndCase2ᚕᚖAIᚋgraphᚋmodelᚐFrontEndCaseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_CaseByResponse(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_CaseByResponseNull(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1716,16 +1705,77 @@ func (ec *executionContext) fieldContext_Query_CaseByResponse(ctx context.Contex
 			return nil, fmt.Errorf("no field named %q was found under type frontEndCase", field.Name)
 		},
 	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_CaseByResponseNotNull(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_CaseByResponseNotNull(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
 	defer func() {
 		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
 		}
 	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_CaseByResponse_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CaseByResponseNotNull(rctx)
+	})
+	if err != nil {
 		ec.Error(ctx, err)
-		return
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.FrontEndCase)
+	fc.Result = res
+	return ec.marshalNfrontEndCase2ᚕᚖAIᚋgraphᚋmodelᚐFrontEndCaseᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_CaseByResponseNotNull(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "caseID":
+				return ec.fieldContext_frontEndCase_caseID(ctx, field)
+			case "locationName":
+				return ec.fieldContext_frontEndCase_locationName(ctx, field)
+			case "location":
+				return ec.fieldContext_frontEndCase_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_frontEndCase_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_frontEndCase_longitude(ctx, field)
+			case "case_date":
+				return ec.fieldContext_frontEndCase_case_date(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_frontEndCase_camera_id(ctx, field)
+			case "image1_path":
+				return ec.fieldContext_frontEndCase_image1_path(ctx, field)
+			case "image2_path":
+				return ec.fieldContext_frontEndCase_image2_path(ctx, field)
+			case "image3_path":
+				return ec.fieldContext_frontEndCase_image3_path(ctx, field)
+			case "image4_path":
+				return ec.fieldContext_frontEndCase_image4_path(ctx, field)
+			case "status":
+				return ec.fieldContext_frontEndCase_status(ctx, field)
+			case "respond":
+				return ec.fieldContext_frontEndCase_respond(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type frontEndCase", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -4168,14 +4218,11 @@ func (ec *executionContext) _case_status(ctx context.Context, field graphql.Coll
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*bool)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_case_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4212,14 +4259,11 @@ func (ec *executionContext) _case_respond(ctx context.Context, field graphql.Col
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*bool)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_case_respond(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4731,14 +4775,11 @@ func (ec *executionContext) _frontEndCase_status(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*bool)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_frontEndCase_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4775,14 +4816,11 @@ func (ec *executionContext) _frontEndCase_respond(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*bool)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_frontEndCase_respond(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5307,7 +5345,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "CaseByResponse":
+		case "CaseByResponseNull":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -5316,7 +5354,30 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_CaseByResponse(ctx, field)
+				res = ec._Query_CaseByResponseNull(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "CaseByResponseNotNull":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_CaseByResponseNotNull(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -5777,16 +5838,10 @@ func (ec *executionContext) _case(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Values[i] = ec._case_status(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "respond":
 
 			out.Values[i] = ec._case_respond(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5880,16 +5935,10 @@ func (ec *executionContext) _frontEndCase(ctx context.Context, sel ast.Selection
 
 			out.Values[i] = ec._frontEndCase_status(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "respond":
 
 			out.Values[i] = ec._frontEndCase_respond(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
