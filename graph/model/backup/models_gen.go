@@ -46,6 +46,11 @@ type CaseUpdate struct {
 	Respond    bool      `json:"respond"`
 }
 
+type CaseUpdateRespondInput struct {
+	ID      string `json:"id"`
+	Respond bool   `json:"respond"`
+}
+
 type FrontEndCase struct {
 	CaseID       string    `json:"id" bun:",pk"`
 	LocationName string    `json:"locationName" bun:",notnull"`

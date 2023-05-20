@@ -38,6 +38,19 @@ func (op *SQLop) CaseUpdate(ctx context.Context, updateInput model.CaseUpdate) (
 	return resultCustomer, err
 }
 
+func (op *SQLop) CaseUpdateRespond(ctx context.Context, ID string, updateInput bool) (*model.Case, error) {
+	err := ValidateID(ID)
+	if err != nil {
+		return nil, err
+	}
+	_, err = op.db.NewUpdate().Model(new(model.Case)).Set("Respond= ?", &updateInput).Set("Status=true").Where("case_id = ?", ID).Exec(ctx)
+	if util.CheckErr(err) {
+		return nil, err
+	}
+	resultCustomer, err := op.CaseFindByID(ctx, ID)
+	return resultCustomer, err
+}
+
 func (op *SQLop) CaseDelete(ctx context.Context, ID string) (*model.Case, error) {
 	err := ValidateID(ID)
 	if err != nil {
@@ -65,7 +78,7 @@ func (op *SQLop) CaseFindByID(ctx context.Context, ID string) (*model.Case, erro
 		return nil, err
 	}
 	arrModel := new(model.Case)
-	err = op.db.NewSelect().Model(op.cameraModel).Where("id = ?", ID).Scan(ctx, arrModel)
+	err = op.db.NewSelect().Model(op.caseModel).Where("case_id = ?", ID).Scan(ctx, arrModel)
 	return arrModel, err
 }
 

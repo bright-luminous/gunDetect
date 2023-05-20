@@ -3,7 +3,7 @@ module AI
 go 1.18
 
 require (
-	github.com/99designs/gqlgen v0.17.30
+	github.com/99designs/gqlgen v0.17.31
 	github.com/google/uuid v1.1.2
 	github.com/lib/pq v1.10.7
 	github.com/uptrace/bun v1.1.12

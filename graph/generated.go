@@ -47,16 +47,17 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CameraCreate    func(childComplexity int, input model.NewCamera) int
-		CameraDelete    func(childComplexity int, input string) int
-		CameraDeleteAll func(childComplexity int) int
-		CameraUpdate    func(childComplexity int, input model.CameraUpdate) int
-		CaseCreate      func(childComplexity int, input model.NewCase) int
-		CaseDelete      func(childComplexity int, input string) int
-		CaseDeleteAll   func(childComplexity int) int
-		CaseUpdate      func(childComplexity int, input model.CaseUpdate) int
-		CreateTable     func(childComplexity int) int
-		DropTable       func(childComplexity int) int
+		CameraCreate      func(childComplexity int, input model.NewCamera) int
+		CameraDelete      func(childComplexity int, input string) int
+		CameraDeleteAll   func(childComplexity int) int
+		CameraUpdate      func(childComplexity int, input model.CameraUpdate) int
+		CaseCreate        func(childComplexity int, input model.NewCase) int
+		CaseDelete        func(childComplexity int, input string) int
+		CaseDeleteAll     func(childComplexity int) int
+		CaseUpdate        func(childComplexity int, input model.CaseUpdate) int
+		CaseUpdateRespond func(childComplexity int, input model.CaseUpdateRespondInput) int
+		CreateTable       func(childComplexity int) int
+		DropTable         func(childComplexity int) int
 	}
 
 	Query struct {
@@ -114,6 +115,7 @@ type MutationResolver interface {
 	CameraDeleteAll(ctx context.Context) ([]*model.Camera, error)
 	CaseCreate(ctx context.Context, input model.NewCase) (*model.Case, error)
 	CaseUpdate(ctx context.Context, input model.CaseUpdate) (*model.Case, error)
+	CaseUpdateRespond(ctx context.Context, input model.CaseUpdateRespondInput) (*model.Case, error)
 	CaseDelete(ctx context.Context, input string) (*model.Case, error)
 	CaseDeleteAll(ctx context.Context) ([]*model.Case, error)
 }
@@ -226,6 +228,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CaseUpdate(childComplexity, args["input"].(model.CaseUpdate)), true
+
+	case "Mutation.caseUpdateRespond":
+		if e.complexity.Mutation.CaseUpdateRespond == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_caseUpdateRespond_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CaseUpdateRespond(childComplexity, args["input"].(model.CaseUpdateRespondInput)), true
 
 	case "Mutation.createTable":
 		if e.complexity.Mutation.CreateTable == nil {
@@ -492,6 +506,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputcameraUpdate,
 		ec.unmarshalInputcaseUpdate,
+		ec.unmarshalInputcaseUpdateRespondInput,
 		ec.unmarshalInputnewCamera,
 		ec.unmarshalInputnewCase,
 	)
@@ -640,6 +655,21 @@ func (ec *executionContext) field_Mutation_caseDelete_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_caseUpdateRespond_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CaseUpdateRespondInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNcaseUpdateRespondInput2AIᚋgraphᚋmodelᚐCaseUpdateRespondInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1232,6 +1262,81 @@ func (ec *executionContext) fieldContext_Mutation_caseUpdate(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_caseUpdate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_caseUpdateRespond(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_caseUpdateRespond(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CaseUpdateRespond(rctx, fc.Args["input"].(model.CaseUpdateRespondInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Case)
+	fc.Result = res
+	return ec.marshalNcase2ᚖAIᚋgraphᚋmodelᚐCase(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_caseUpdateRespond(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "caseID":
+				return ec.fieldContext_case_caseID(ctx, field)
+			case "case_date":
+				return ec.fieldContext_case_case_date(ctx, field)
+			case "camera_id":
+				return ec.fieldContext_case_camera_id(ctx, field)
+			case "image1_path":
+				return ec.fieldContext_case_image1_path(ctx, field)
+			case "image2_path":
+				return ec.fieldContext_case_image2_path(ctx, field)
+			case "image3_path":
+				return ec.fieldContext_case_image3_path(ctx, field)
+			case "image4_path":
+				return ec.fieldContext_case_image4_path(ctx, field)
+			case "status":
+				return ec.fieldContext_case_status(ctx, field)
+			case "respond":
+				return ec.fieldContext_case_respond(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type case", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_caseUpdateRespond_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4858,42 +4963,47 @@ func (ec *executionContext) unmarshalInputcameraUpdate(ctx context.Context, obj 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.ID = data
 		case "locationName":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationName"))
-			it.LocationName, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.LocationName = data
 		case "location":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
-			it.Location, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Location = data
 		case "latitude":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
-			it.Latitude, err = ec.unmarshalNFloat2float64(ctx, v)
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Latitude = data
 		case "longitude":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
-			it.Longitude, err = ec.unmarshalNFloat2float64(ctx, v)
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Longitude = data
 		}
 	}
 
@@ -4918,74 +5028,121 @@ func (ec *executionContext) unmarshalInputcaseUpdate(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.ID = data
 		case "case_date":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("case_date"))
-			it.CaseDate, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.CaseDate = data
 		case "camera_id":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("camera_id"))
-			it.CameraID, err = ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.CameraID = data
 		case "image1_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image1_path"))
-			it.Image1Path, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image1Path = data
 		case "image2_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image2_path"))
-			it.Image2Path, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image2Path = data
 		case "image3_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image3_path"))
-			it.Image3Path, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image3Path = data
 		case "image4_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image4_path"))
-			it.Image4Path, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image4Path = data
 		case "status":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			it.Status, err = ec.unmarshalNBoolean2bool(ctx, v)
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Status = data
 		case "respond":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("respond"))
-			it.Respond, err = ec.unmarshalNBoolean2bool(ctx, v)
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Respond = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputcaseUpdateRespondInput(ctx context.Context, obj interface{}) (model.CaseUpdateRespondInput, error) {
+	var it model.CaseUpdateRespondInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "respond"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "respond":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("respond"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Respond = data
 		}
 	}
 
@@ -5010,34 +5167,38 @@ func (ec *executionContext) unmarshalInputnewCamera(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationName"))
-			it.LocationName, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.LocationName = data
 		case "location":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
-			it.Location, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Location = data
 		case "latitude":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
-			it.Latitude, err = ec.unmarshalNFloat2float64(ctx, v)
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Latitude = data
 		case "longitude":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
-			it.Longitude, err = ec.unmarshalNFloat2float64(ctx, v)
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Longitude = data
 		}
 	}
 
@@ -5062,50 +5223,56 @@ func (ec *executionContext) unmarshalInputnewCase(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("case_date"))
-			it.CaseDate, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.CaseDate = data
 		case "camera_id":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("camera_id"))
-			it.CameraID, err = ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.CameraID = data
 		case "image1_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image1_path"))
-			it.Image1Path, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image1Path = data
 		case "image2_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image2_path"))
-			it.Image2Path, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image2Path = data
 		case "image3_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image3_path"))
-			it.Image3Path, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image3Path = data
 		case "image4_path":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image4_path"))
-			it.Image4Path, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Image4Path = data
 		}
 	}
 
@@ -5203,6 +5370,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_caseUpdate(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "caseUpdateRespond":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_caseUpdateRespond(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -6405,6 +6581,11 @@ func (ec *executionContext) marshalNcase2ᚖAIᚋgraphᚋmodelᚐCase(ctx contex
 
 func (ec *executionContext) unmarshalNcaseUpdate2AIᚋgraphᚋmodelᚐCaseUpdate(ctx context.Context, v interface{}) (model.CaseUpdate, error) {
 	res, err := ec.unmarshalInputcaseUpdate(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNcaseUpdateRespondInput2AIᚋgraphᚋmodelᚐCaseUpdateRespondInput(ctx context.Context, v interface{}) (model.CaseUpdateRespondInput, error) {
+	res, err := ec.unmarshalInputcaseUpdateRespondInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

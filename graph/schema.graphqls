@@ -86,6 +86,11 @@ input caseUpdate{
   respond: Boolean!
 }
 
+input caseUpdateRespondInput{
+  id: ID!
+  respond: Boolean!
+}
+
 type Query {
   cameraByID(input: ID!): camera!
   cameras: [camera!]!
@@ -100,7 +105,7 @@ type Query {
 type Mutation {
   dropTable: Boolean!
   createTable: Boolean!
-  
+
   cameraCreate(input: newCamera!): camera!
   cameraUpdate(input: cameraUpdate!): camera!
   cameraDelete(input: ID!): camera!
@@ -108,6 +113,7 @@ type Mutation {
 
   caseCreate(input: newCase!): case!
   caseUpdate(input: caseUpdate!): case!
+  caseUpdateRespond(input: caseUpdateRespondInput!): case!
   caseDelete(input: ID!): case!
   caseDeleteAll: [case!]
 }

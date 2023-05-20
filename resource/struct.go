@@ -27,6 +27,7 @@ type DatabaseOp interface {
 
 	CaseCreate(ctx context.Context, userInput *model.NewCase) (*model.Case, error)
 	CaseUpdate(ctx context.Context, updateInput model.CaseUpdate) (*model.Case, error)
+	CaseUpdateRespond(ctx context.Context, ID string, updateInput bool) (*model.Case, error)
 	CaseDelete(ctx context.Context, ID string) (*model.Case, error)
 	CaseDeleteAll(ctx context.Context) ([]*model.Case, error)
 
