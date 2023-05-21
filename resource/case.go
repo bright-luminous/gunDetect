@@ -90,22 +90,20 @@ func (op *SQLop) Cases(ctx context.Context) ([]*model.Case, error) {
 
 func (op *SQLop) CaseByResponseNull(ctx context.Context) ([]*model.FrontEndCase, error) {
 	arrModel := new([]*model.FrontEndCase)
-	err := op.db.NewSelect().Table("cases", "cameras").
+	err := op.db.NewSelect().Table("cases").
+		Join("JOIN cameras ON cases.camera_id=cameras.camera_id").
+		// JoinOn("cas.camera_id=cam.camera_id").
 		Where("cases.respond IS NULL").
-		TableExpr("cases AS cas").
-		Join("JOIN cameras AS cam").
-		JoinOn("cas.camera_id=cam.camera_id").
 		Scan(ctx, arrModel)
 	return *arrModel, err
 }
 
 func (op *SQLop) CaseByResponseNotNull(ctx context.Context) ([]*model.FrontEndCase, error) {
 	arrModel := new([]*model.FrontEndCase)
-	err := op.db.NewSelect().Table("cases", "cameras").
+	err := op.db.NewSelect().Table("cases").
+		Join("JOIN cameras ON cases.camera_id=cameras.camera_id").
+		// JoinOn("cas.camera_id=cam.camera_id").
 		Where("cases.respond IS NOT NULL").
-		TableExpr("cases AS cas").
-		Join("JOIN cameras AS cam").
-		JoinOn("cas.camera_id=cam.camera_id").
 		Scan(ctx, arrModel)
 	return *arrModel, err
 }
