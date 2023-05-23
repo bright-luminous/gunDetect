@@ -14,6 +14,8 @@ func (op *SQLop) CameraCreate(ctx context.Context, cameraInput *model.NewCamera)
 		CameraID:     newID,
 		LocationName: cameraInput.LocationName,
 		Location:     cameraInput.Location,
+		Latitude:     cameraInput.Latitude,
+		Longitude:    cameraInput.Longitude,
 	}
 	_, err := op.db.NewInsert().Model(&caseToBeAdd).Exec(ctx)
 	return &caseToBeAdd, err
